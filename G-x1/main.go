@@ -24,6 +24,12 @@ func main() {
 		fmt.Println("Error reading questions")
 	}
 
+	// reading 1st row, 1st column
+	question_1 := questions[0][0]
+
+	fmt.Println(question_1)
+	// END of TEST
+
 	for _, eachquestion := range questions {
 		fmt.Println(eachquestion)
 	}
