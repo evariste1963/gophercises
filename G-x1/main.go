@@ -28,6 +28,9 @@ func main() {
 	question_1 := questions[0][0]
 
 	fmt.Println(question_1)
+
+	//total number of questions
+	fmt.Println(len(questions))
 	// END of TEST
 
 	for _, eachquestion := range questions {
