@@ -28,6 +28,8 @@ func main() {
 	correct := 0
 	//display total number of questions
 	fmt.Printf("There are %v questions\n", len(questions))
+	fmt.Printf("Press return key when ready\n")
+	fmt.Scanln()
 
 	for i, question := range questions {
 		ans := ""
