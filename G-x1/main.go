@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"encoding/csv"
 	"fmt"
 	"log"
@@ -28,21 +29,27 @@ func main() {
 	correct := 0
 	//display total number of questions
 	fmt.Printf("There are %v questions\n", len(questions))
-	fmt.Printf("Press return key when ready\n")
+	fmt.Print("Press return key when ready\n")
 	fmt.Scanln()
 
 	for i, question := range questions {
-		ans := ""
+
 		// ask the next question
 		fmt.Printf("Question %v - Calculate %v\n", i+1, question[0])
+
 		//wait for answer
-		fmt.Scanln(&ans)
+		scanner := bufio.NewScanner(os.Stdin)
+		scanner.Scan()
+		ans := scanner.Text()
+
 		//compare input answer to actual answer
 		if ans == question[1] {
 			//increment correct if correct answer given
 			correct += 1
 		}
+
 	}
+
 	//return correct answers no etc
 	fmt.Printf("You scored %v out of %v\n", correct, len(questions))
 }
