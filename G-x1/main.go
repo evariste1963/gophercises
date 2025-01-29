@@ -13,9 +13,10 @@ import (
 func main() {
 
 	timeLimit := flag.Int("timeLimit", 20, "quiz timer")
+	fileName := flag.String("fileName", "questions.csv", "a quiz file in csv format")
 	flag.Parse()
 
-	file, err := os.Open("questions.csv")
+	file, err := os.Open(*fileName)
 
 	if err != nil {
 		log.Fatal("Error while reading file", err)
