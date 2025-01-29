@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"time"
 )
 
 func main() {
@@ -32,8 +33,19 @@ func main() {
 	fmt.Print("Press return key when ready\n")
 	fmt.Scanln()
 
-	for i, question := range questions {
+	// initiate timer
+	timer := time.NewTimer(10 * time.Second)
+	defer timer.Stop()
 
+	//run timer
+	go func() {
+		<-timer.C
+		fmt.Printf("\nTime up! You scored %v out of %v", correct, len(questions))
+		//exit program
+		os.Exit(0)
+	}()
+	startTime := time.Now()
+	for i, question := range questions {
 		// ask the next question
 		fmt.Printf("Question %v - Calculate %v\n", i+1, question[0])
 
@@ -47,9 +59,10 @@ func main() {
 			//increment correct if correct answer given
 			correct += 1
 		}
-
 	}
+	//stop timer if all questions have been answered in the time
+	timer.Stop()
 
-	//return correct answers no etc
-	fmt.Printf("You scored %v out of %v\n", correct, len(questions))
+	//return correct answers and elapsed time
+	fmt.Printf("You scored %v out of %v in %.2f seconds\n", correct, len(questions), (time.Since(startTime)).Seconds())
 }
