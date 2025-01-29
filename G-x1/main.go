@@ -51,7 +51,7 @@ func main() {
 	startTime := time.Now()
 	for i, question := range questions {
 		// ask the next question
-		fmt.Printf("Question %v - Calculate %v\n", i+1, question[0])
+		fmt.Printf("Question %v - What is:  %v\n", i+1, question[0])
 
 		//wait for answer
 		scanner := bufio.NewScanner(os.Stdin)
