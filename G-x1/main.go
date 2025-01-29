@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"encoding/csv"
+	"flag"
 	"fmt"
 	"log"
 	"os"
@@ -10,6 +11,9 @@ import (
 )
 
 func main() {
+
+	timeLimit := flag.Int("timeLimit", 20, "quiz timer")
+	flag.Parse()
 
 	file, err := os.Open("questions.csv")
 
@@ -34,7 +38,7 @@ func main() {
 	fmt.Scanln()
 
 	// initiate timer
-	timer := time.NewTimer(10 * time.Second)
+	timer := time.NewTimer(time.Duration(*timeLimit) * time.Second)
 	defer timer.Stop()
 
 	//run timer
