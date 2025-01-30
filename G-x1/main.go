@@ -16,6 +16,7 @@ type Quiz struct {
 	Correct   int
 }
 
+// *=returns the value at address  &=returns the memory address
 // NewQuiz initializes a new Quiz from a CSV file.
 func NewQuiz(fileName string) (*Quiz, error) {
 	file, err := os.Open(fileName)
