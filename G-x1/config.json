@@ -1,0 +1,6 @@
+{
+    "csv_file": "questions.csv",
+    "delimiter": ",",
+    "time_limit": 30
+}
+
