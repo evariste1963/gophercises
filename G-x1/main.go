@@ -10,68 +10,80 @@ import (
 	"time"
 )
 
-func main() {
+// Quiz represents the quiz with questions and answers.
+type Quiz struct {
+	Questions [][]string
+	Correct   int
+}
 
-	timeLimit := flag.Int("timeLimit", 20, "quiz timer")
-	fileName := flag.String("fileName", "questions.csv", "a quiz file in csv format")
-	flag.Parse()
-
-	file, err := os.Open(*fileName)
-
+// NewQuiz initializes a new Quiz from a CSV file.
+func NewQuiz(fileName string) (*Quiz, error) {
+	file, err := os.Open(fileName)
 	if err != nil {
-		exit(fmt.Sprintf("Failed to open CSV file: %s\n", *fileName), 1)
+		return nil, fmt.Errorf("failed to open CSV file: %s", fileName)
 	}
 	defer file.Close()
 
 	reader := csv.NewReader(file)
-
 	questions, err := reader.ReadAll()
-
 	if err != nil {
-		exit("Error reading questions", 1)
+		return nil, fmt.Errorf("error reading questions: %v", err)
 	}
 
-	//keep track of number of correct answers
-	correct := 0
-	//display total number of questions
-	fmt.Printf("There are %d questions\n", len(questions))
+	return &Quiz{Questions: questions}, nil
+}
+
+// Run starts the quiz and handles timing and user input.
+func (q *Quiz) Run(timeLimit int) {
+	fmt.Printf("There are %d questions\n", len(q.Questions))
 	fmt.Print("Press return key when ready\n")
 	fmt.Scanln()
 
-	// initiate timer
-	timer := time.NewTimer(time.Duration(*timeLimit) * time.Second)
+	timer := time.NewTimer(time.Duration(timeLimit) * time.Second)
 	defer timer.Stop()
 
-	//run timer
-	go func() {
-		<-timer.C
-		exit(fmt.Sprintf("\nTime up! You scored %d out of %d", correct, len(questions)), 0)
-
-	}()
 	startTime := time.Now()
-	for i, question := range questions {
-		// ask the next question
-		fmt.Printf("Question %d - What is:  %v = ", i+1, strings.TrimSpace(question[0]))
 
-		//wait for answer
-		scanner := bufio.NewScanner(os.Stdin)
-		scanner.Scan()
-		ans := strings.TrimSpace(scanner.Text())
+	for i, question := range q.Questions {
+		fmt.Printf("Question %d - What is: %v = ", i+1, strings.TrimSpace(question[0]))
 
-		//compare input answer to actual answer
-		if ans == question[1] {
-			//increment correct if correct answer given
-			correct += 1
+		answerCh := make(chan string)
+		go func() {
+			scanner := bufio.NewScanner(os.Stdin)
+			scanner.Scan()
+			answerCh <- strings.TrimSpace(scanner.Text())
+		}()
+
+		select {
+		case <-timer.C:
+			fmt.Printf("\nTime up! You scored %d out of %d\n", q.Correct, len(q.Questions))
+			return
+		case ans := <-answerCh:
+			if ans == question[1] {
+				q.Correct++
+			}
 		}
 	}
-	//stop timer if all questions have been answered in the time
-	timer.Stop()
 
-	//return correct answers and elapsed time
-	fmt.Printf("You scored %d out of %d in %.2f seconds\n", correct, len(questions), (time.Since(startTime)).Seconds())
+	timer.Stop()
+	fmt.Printf("You scored %d out of %d in %.2f seconds\n", q.Correct, len(q.Questions), time.Since(startTime).Seconds())
 }
 
+// exit prints a message and exits the program with the given code.
 func exit(msg string, code int) {
 	fmt.Println(msg)
 	os.Exit(code)
+}
+
+func main() {
+	timeLimit := flag.Int("timeLimit", 20, "quiz timer")
+	fileName := flag.String("fileName", "questions.csv", "a quiz file in csv format")
+	flag.Parse()
+
+	quiz, err := NewQuiz(*fileName)
+	if err != nil {
+		exit(err.Error(), 1)
+	}
+
+	quiz.Run(*timeLimit)
 }
