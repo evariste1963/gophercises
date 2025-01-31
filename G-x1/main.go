@@ -70,7 +70,7 @@ func NewQuiz(fileName string, delimiter rune) (*Quiz, error) {
 }
 
 // Run starts the quiz and handles timing and user input.
-func (q *Quiz) Run(timeLimit int) {
+func (q *Quiz) Run(timeLimit int) { //Method definition (q *Quiz) is the method reciever
 	fmt.Printf("There are %d questions\n", len(q.Questions))
 	fmt.Print("Press return key when ready\n")
 	fmt.Scanln()
@@ -141,5 +141,5 @@ func main() {
 	}
 
 	// Start the quiz
-	quiz.Run(*timeLimit)
+	quiz.Run(*timeLimit) //Run is a method on the reciever parameter (q *Quiz)
 }
